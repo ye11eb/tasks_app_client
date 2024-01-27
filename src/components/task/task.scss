@@ -1,0 +1,312 @@
+@media (prefers-color-scheme: light) {
+    .taskWrapper{
+        &:hover{
+            background: rgba(0, 0, 0, 0.04);
+        }
+    }
+
+    .taskWrapper{
+        *{
+            user-select: none;
+        }
+        display: flex;
+        flex-direction: column;
+        border-radius: 4px;
+        margin-bottom: 2px;
+        transition: all .3s;
+        cursor: pointer;
+        .taskTop{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            padding: 3px 8px;
+            > div{
+                display: flex;
+                flex-direction: row;
+            }
+            .taskIcons{
+                margin: 0 5px;
+                >img{
+                    margin: 0 3px;
+                }
+            }
+            .checkListItemsRight{
+                >div{
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .checkListItemsRightDefault{
+                    img{
+                        margin: 0 4px;
+                    }
+                }
+    
+                .checkListItemsRightPosible{
+                    img{
+                        margin: 0 2px;
+                    }
+                }
+    
+                .checkListItemsRightDate{
+                    position: relative;
+                    width: 18px;
+                    height: 18px;
+                    >img{
+                        margin: 0;
+                        width: 18px;
+                        height: 18px;
+                    }
+                    p{  
+                        top: 7px;
+                        left: 7px;
+                        font-weight: 700;
+                        line-height: 10px;
+                        color: #1976D2;
+                        text-align: center;
+                        font-family: Roboto;
+                        position: absolute;
+                        font-size: 8px;
+                    }
+                }
+            }    
+        }
+        .taskBody{
+            display: flex;
+            flex-direction: column;
+            padding: 0 8px 12px 28px;
+            .description{
+                padding: 6px 0 8px 0;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+                font-family: Roboto;
+                font-size: 12px;
+                font-weight: 400;
+                line-height: 14px;
+                letter-spacing: 0em;
+                text-align: left;
+                color: rgba(0, 0, 0, 0.6);
+            }
+            .checkListItemsWrapper{
+                .checkListItem{
+                    display: flex;
+                    height: 22px;
+                    align-items: center;
+                    flex-direction: row;
+                    border-bottom: 1px solid rgba(0, 0, 0, 0.12) ;
+                    img{
+                        height: 10px;
+                        width: 10px;
+                        margin-right: 5px;
+                    }
+                    p{
+                        font-family: Roboto;
+                        font-size: 12px;
+                        font-weight: 400;
+                        line-height: 14px;
+                        letter-spacing: 0em;
+                        text-align: left;
+                        color: rgba(0, 0, 0, 0.6);
+                    }
+                }
+            }
+            .taskBottom{
+                display: flex;
+                padding-top: 10px;
+                .labelWrapper{
+                    height: 14px;
+                    padding: 1px, 10px, 0px, 10px;
+                    border-radius: 100px;
+                    gap: 10px;
+                    border: 0.6px solid rgba(2, 136, 209, 1);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin-right: 5px;
+                    p{
+                        margin: 0 10px;
+                        font-family: Roboto;
+                        font-size: 9px;
+                        font-weight: 400;
+                        line-height: 12px;
+                        letter-spacing: 0em;
+                        text-align: center;
+                        color: rgba(2, 136, 209, 1);
+                    }      
+                }
+            }
+        }
+    }
+    
+    .underlined{
+        -webkit-box-shadow: 0px 2px 19px 0px rgba(25,118,210,0.17);
+        -moz-box-shadow: 0px 2px 19px 0px rgba(25,118,210,0.17);
+        box-shadow: 0px 2px 19px 0px rgba(25,118,210,0.17);
+    }
+    
+    .taskWrapperActive{
+        background: rgba(25, 118, 210, 0.12);
+    }
+
+}
+@media (prefers-color-scheme: dark) {
+    .taskWrapper{
+        &:hover{
+            background: rgba(255, 255, 255, 0.04);
+        }
+    }
+
+    .taskWrapper{
+        background: #202124;
+        *{
+            user-select: none;
+        }
+        display: flex;
+        flex-direction: column;
+        border-radius: 4px;
+        margin-bottom: 2px;
+        transition: all .3s;
+        cursor: pointer;
+        .taskTop{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            padding: 3px 8px;
+            > div{
+                display: flex;
+                flex-direction: row;
+            }
+            .taskIcons{
+                margin: 0 5px;
+                >img{
+                    margin: 0 3px;
+                }
+            }
+
+            .checkListItemsLeft{
+                p{
+                    color: white;
+                }
+            }
+            
+            .checkListItemsRight{
+                >div{
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .checkListItemsRightDefault{
+                    img{
+                        margin: 0 4px;
+                    }
+                }
+    
+                .checkListItemsRightPosible{
+                    img{
+                        margin: 0 2px;
+                    }
+                }
+    
+                .checkListItemsRightDate{
+                    position: relative;
+                    width: 18px;
+                    height: 18px;
+                    >img{
+                        margin: 0;
+                        width: 18px;
+                        height: 18px;
+                    }
+                    p{  
+                        top: 7px;
+                        left: 7px;
+                        font-weight: 700;
+                        line-height: 10px;
+                        color: #1976D2;
+                        text-align: center;
+                        font-family: Roboto;
+                        position: absolute;
+                        font-size: 8px;
+                    }
+                }
+            }    
+        }
+        .taskBody{
+            display: flex;
+            flex-direction: column;
+            padding: 0 8px 12px 28px;
+            .description{
+                padding: 6px 0 8px 0;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+                font-family: Roboto;
+                font-size: 12px;
+                font-weight: 400;
+                line-height: 14px;
+                letter-spacing: 0em;
+                text-align: left;
+                color: rgba(255, 255, 255, 0.70);
+            }
+            .checkListItemsWrapper{
+                .checkListItem{
+                    display: flex;
+                    height: 22px;
+                    align-items: center;
+                    flex-direction: row;
+                    border-bottom: 1px solid rgba(0, 0, 0, 0.12) ;
+                    img{
+                        height: 10px;
+                        width: 10px;
+                        margin-right: 5px;
+                    }
+                    p{
+                        font-family: Roboto;
+                        font-size: 12px;
+                        font-weight: 400;
+                        line-height: 14px;
+                        letter-spacing: 0em;
+                        text-align: left;
+                        color: rgba(255, 255, 255, 0.70);
+                    }
+                }
+            }
+            .taskBottom{
+                display: flex;
+                padding-top: 10px;
+                .labelWrapper{
+                    height: 14px;
+                    padding: 1px, 10px, 0px, 10px;
+                    border-radius: 100px;
+                    gap: 10px;
+                    border: 0.6px solid #29B6F6;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin-right: 5px;
+                    p{
+                        margin: 0 10px;
+                        font-family: Roboto;
+                        font-size: 9px;
+                        font-weight: 400;
+                        line-height: 12px;
+                        letter-spacing: 0em;
+                        text-align: center;
+                        color: #29B6F6;
+                    }      
+                }
+            }
+        }
+    }
+    
+    .underlined{
+        -webkit-box-shadow: 0px 2px 19px 0px rgba(25,118,210,0.17);
+        -moz-box-shadow: 0px 2px 19px 0px rgba(25,118,210,0.17);
+        box-shadow: 0px 2px 19px 0px rgba(25,118,210,0.17);
+    }
+    
+    .taskWrapperActive{
+        background: rgba(144, 202, 249, 0.12);
+    }
+
+}
+
+
+
+
