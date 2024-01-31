@@ -1,10 +1,8 @@
 .calendarWrapper{
-    left: -220px;
     position: absolute;
     min-height: 220px;
     width: 240px;
     z-index: 2121;
-    background: rgb(255, 255, 255);
     box-shadow: 0px 3px 5px -1px #00000033;
     box-shadow: 0px 5px 8px 0px #00000024;
     box-shadow: 0px 1px 14px 0px #0000001F;
@@ -40,7 +38,6 @@
                 gap: 10px;
                 flex-shrink: 0;
                 border-radius:  4px;
-                border: 1px solid rgba(25, 118, 210, 0.30);
                 p{
                     color: rgba(0, 0, 0, 0.60);
                     text-align: center;
@@ -52,11 +49,8 @@
                 }
             }
             .filled{
-                background: #1976D2;
                 box-shadow: 0px 1px 1px -2px rgba(0, 0, 0, 0.20), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
                 p{
-                    background: #1976D2;
-                    color: #FFF;
                     font-weight: 500;
                     line-height: normal;
                     letter-spacing: 0.46px;
@@ -137,17 +131,15 @@
             right: -42px;
             width: 12px;
             height: 12px;
-            background-image: url('../../media/circleCalendar.svg');
             svg{
                 display: none;
             }
         }
     }
-
+    
     .MuiDateCalendar-root{
         width: 210px;
         .MuiPickersCalendarHeader-label{
-            color:  rgba(0, 0, 0, 0.87);
             font-feature-settings: 'clig' off, 'liga' off;
             font-family: Roboto;
             font-size: 16px;
@@ -161,24 +153,10 @@
                 padding: 0;
             }
             display: flex;
-            // justify-content: center;
-            
             align-items: center;
-            // .MuiPickersArrowSwitcher-spacer{
-            //     background-position: 0%;
-            //     background-image: url('../../media/circleCalendar.svg');
-            //     background-repeat: no-repeat;
-            //     height: 15px;
-            //     width: 15px;
-            // }
         }
         .MuiDayCalendar-weekContainer{
-            // >div{
-            //     display: none;
-            // }
             .MuiPickersDay-root{
-                // visibility: hidden;
-                // display: none;
                 margin: 0;
             }
             button{
@@ -193,7 +171,6 @@
                 line-height: 23px;
                 letter-spacing: 0.4000000059604645px;
                 text-align: center;
-                color: #00000061;
     
             }
         }
@@ -210,9 +187,139 @@
         min-height: 195px;
         height: 100%;
     }
-    .css-1q04gal-MuiDateCalendar-root{
+    .MuiDateCalendar-root{
         height: unset;
     }
 
+
+}
+
+@media (prefers-color-scheme: light) {
+    .calendarWrapper{
+        background: rgb(255, 255, 255);
+        box-shadow: 0px 3px 5px -1px #00000033;
+        box-shadow: 0px 5px 8px 0px #00000024;
+        box-shadow: 0px 1px 14px 0px #0000001F;
+        .customButtons{
+            .buttons{
+                .btn{
+                    border: 1px solid rgba(25, 118, 210, 0.30);
+                    p{
+                        color: rgba(0, 0, 0, 0.60);
+                    }
+                }
+                .filled{
+                    background: #1976D2;
+                    box-shadow: 0px 1px 1px -2px rgba(0, 0, 0, 0.20), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+                    p{
+                        color: #FFF;
+                    }
+                }
+            }
+        }
+    
+        .MuiPickersCalendarHeader-labelContainer{
+            .MuiPickersCalendarHeader-switchViewButton {
+                background-image: url('../../../media/darkMode/calendar/circleCalendar.svg');
+            }
+        }
+        
+        .MuiDateCalendar-root{
+            .MuiPickersCalendarHeader-label{
+                color:  rgba(0, 0, 0, 0.87);
+            }
+            .MuiDayCalendar-header{
+                span{
+                    color: #00000061;
+        
+                }
+            }
+        }
+    }
+
+}
+@media (prefers-color-scheme: dark) {
+    .calendarWrapper{
+        background: #35363A;
+        box-shadow: 0px 3px 5px -1px #00000033;
+        box-shadow: 0px 5px 8px 0px #00000024;
+        box-shadow: 0px 1px 14px 0px #0000001F;
+        .customButtons{
+            .buttons{
+                .btn{
+                    border: 1px solid rgba(25, 118, 210, 0.30);
+                    p{
+                        color: rgba(255, 255, 255, 0.70);
+                    }
+                }
+                .filled{
+                    background: #90CAF9;
+                    box-shadow: 0px 1px 1px -2px rgba(0, 0, 0, 0.20), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+                    p{
+                        color: #000000DE;
+                    }
+                }
+            }
+        }
+    
+        .MuiPickersCalendarHeader-labelContainer{
+            .MuiPickersCalendarHeader-switchViewButton {
+                background-image: url('../../../media/darkMode/calendar/circleCalendar.svg');
+            }
+        }
+        
+        .MuiDateCalendar-root{
+            .MuiPickersCalendarHeader-label{
+                color: #FFF;
+            }
+            .MuiDayCalendar-header{
+                span{
+                    color: rgba(255, 255, 255, 0.38);
+        
+                }
+            }
+        }
+        .MuiButtonBase-root{
+            color: #fff;
+        }
+
+        .Mui-selected {
+            background: #90CAF9 !important;
+            color: #000000DE !important;
+            transition: all .3s;
+        }
+
+        .MuiPickersYear-yearButton{
+            font-size: 14px;
+            color: #fff;
+        }
+
+        .MuiPickersMonth-monthButton{
+            font-size: 14px;
+            color: #fff;
+        }
+
+        .MuiPickersArrowSwitcher-spacer{
+            height: 100px;
+        }
+
+        .css-kg9q0s-MuiButtonBase-root-MuiIconButton-root-MuiPickersArrowSwitcher-button{
+            background-image: url('../../../media/darkMode/calendar/arrowLeft.svg');
+            background-repeat: no-repeat;
+            background-position: center;
+            svg{
+                visibility: hidden;
+            }
+        }
+
+        .css-1nkg345-MuiButtonBase-root-MuiIconButton-root-MuiPickersArrowSwitcher-button{
+            background-image: url('../../../media/darkMode/calendar/arrowRight.svg');
+            background-repeat: no-repeat;
+            background-position: center;
+            svg{
+                visibility: hidden;
+            }
+        }
+    }
 
 }
