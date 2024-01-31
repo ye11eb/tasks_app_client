@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import Header from './components/header/Header'
-import AllTask from './pages/AllTasks/AllTasks';
 import AddTask from './components/addTask/AddTask';
+import { Route, Routes } from 'react-router-dom';
+import ByPriority from './views/ByPriority/ByPriority';
+import Done from './pages/Done/Done';
+import Inbox from './pages/Inbox/Inbox';
 
 function App() {
-  const [selectedField, setSelectedField] = useState('allTasks')
+  const [currentView, setCurrentView] = useState('All Tasks')
   const [tasks, setTasks] = useState([
     {
       _id: 'gdsgdfg',
@@ -153,24 +156,36 @@ function App() {
       }
   }
   ])
+
+  // console.log(tasks);
   const [theme, setTheme] = useState(window.matchMedia("(prefers-color-scheme: dark)").matches)
-  console.log('theme');
-  console.log(theme);
-  console.log('====================================');
   const [addTaskOpen, setAddTaskOpen] = useState(false)
 
   return (
     <div className="App">
       <Header 
-        selectedField={selectedField} 
-        setSelectedField={setSelectedField}
+        currentView={currentView} 
+        setCurrentView={setCurrentView}
         theme={theme}
         setTheme={setTheme}
       />
-      <AllTask
-        tasks={tasks}
-        setTasks={setTasks}
-      />
+      <Routes>
+        <Route index element={
+          <Inbox
+            currentView={currentView}
+            theme={theme}
+            tasks={tasks}
+            setTasks={setTasks}
+          />  
+        } />
+        <Route path='/done' element={
+           <Done
+            theme={theme}
+            tasks={tasks}
+            setTasks={setTasks}
+          />  
+        } />
+      </Routes>
       {addTaskOpen && <AddTask setAddTaskOpen={setAddTaskOpen} setTasks={setTasks} tasks={tasks}/>}
       <div className="addTaskButton"
         onClick={() => setAddTaskOpen(true)}

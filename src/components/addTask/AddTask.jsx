@@ -3,53 +3,28 @@ import './addTask.scss'
 import dayjs from 'dayjs';
 
 //components
-import DatePicker from '../datePicker/DatePicker'
-
-//icons 
-import checkListIcon from '../../media/checkListIcon.svg'
-import closeBtnAddTask from '../../media/closeBtnAddTask.svg'
-import circleChecklist from '../../media/circleChecklist.svg'
-import labelIcon from '../../media/posible/labelIcon.svg'
-import labelActiveIcon from '../../media/posible/labelActiveIcon.svg'
-import forwardTaskImg from '../../media/forwardTaskImg.svg'
-import repeatGrayIcon from '../../media/posible/repeat.svg'
-import alarmClockGrayIcon from '../../media/posible/alarmClock.svg'
-import repeatIcon from '../../media/posible/repeatGray.svg'
-import alarmClockIcon from '../../media/posible/alarmClockGray.svg'
-
-// import calendar from 'client/src/media/posible/calendar.svg'
-//calendars icon
-import todayIcon from '../../media/calendar/todayIcon.svg'
-import tomorowIcon from '../../media/calendar/tomorowIcon.svg'
-import calendarActiveIcon from '../../media/calendar/calendarIcon.svg'
-import calendarGray from '../../media/calendar/calendar.svg'
-
-//flags
-import flagGray from '../../media/flags/flagGray.svg'
-import flagOrange from '../../media/flags/flagOrange.svg'
-import flagRed from '../../media/flags/flagRed.svg'
-
-//progress
-import Done from '../../media/progress/Done.svg'
-import InProgress from '../../media/progress/InProgress.svg'
-import OnTesting from '../../media/progress/OnTesting.svg'
-import ToDo from '../../media/progress/ToDo.svg'
+import DatePicker from '../dropdowns/datePicker/DatePicker.jsx'
+import Icons from '../../utils/ThemeIconPicker.js'
+import Progress from '../dropdowns/Progress.jsx';
+import { Prority } from '../dropdowns/Prority.jsx';
+import CheckListItem from './components/CheckListItem.jsx';
 
 const AddTask = ({ setAddTaskOpen, setTasks, tasks }) => {
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
-    const [checkList, setCheckList] = useState([])
+    const [checkList, setCheckList] = useState([{title: '', done: false}])
     const [checkListItem, setCheckListItem] = useState('')
     const [repeat, setRepeat] = useState(false)
-    const [alarm, setAlarm] = useState(true)
+    const [alarm, setAlarm] = useState(false)
 
     const [labels, setLabels] = useState([])
     const [progress, setProgress] = useState('')
     const [priority, setPriority] = useState('')
     const [openSelectDate, setOpenSelectDate] = useState(false)
     const [Cdate, setDate] = useState(null);
-    const [calendarImg, setClandarImg] = useState(calendarGray)
+    const [calendarImg, setClandarImg] = useState(Icons.calendarGrayIcon)
     const [daysToPickedDate, setDaysToPickedDate] = useState(0)
+    const [shakeWindow, setShakeWindow] = useState()
     let currentDate = dayjs(new Date())
 
     //label
@@ -58,105 +33,141 @@ const AddTask = ({ setAddTaskOpen, setTasks, tasks }) => {
 
     //progress
     const progressVariants = [
-        {title: 'To Do', icon: ToDo},
-        {title: 'On Testing', icon: OnTesting},
-        {title: 'In Progress', icon: InProgress},
-        {title: 'Done', icon: Done}
+        {title: 'To Do', icon: Icons.ToDoIcon},
+        {title: 'On Testing', icon: Icons.OnTestingIcon},
+        {title: 'In Progress', icon: Icons.InProgressIcon},
+        {title: 'Done', icon: Icons.DoneIcon}
     ]
     const [openSelectProgress, setOpenSelectProgress] = useState(false)
 
     //priority
     const priorityVariants = [
-        {title: 'High', icon: flagRed},
-        {title: 'Medium', icon: flagOrange},
-        {title: 'None', icon: flagGray}
+        {title: 'High', icon: Icons.FlagRedIcon},
+        {title: 'Medium', icon: Icons.FlagOrangeIcon},
+        {title: 'None', icon: Icons.FlagGrayIcon}
     ]
     const [openSelectPriority, setOpenSelectPriority] = useState(false)
-
-    //
 
     //refs
     const labelsRef = useRef(null);
     const progressRef = useRef(null);
     const priorityRef = useRef(null);
+    const addTaskRef = useRef(null);
     const calendarRef = useRef(null);
 
     //get every click
     useOutsideAlerter(labelsRef, setOpenSelectLabel);
-    useOutsideAlerter(calendarRef, setOpenSelectDate);
     useOutsideAlerter(progressRef, setOpenSelectProgress);
     useOutsideAlerter(priorityRef, setOpenSelectPriority);
+    useOutsideAlerter(calendarRef, setOpenSelectDate);
+    useOutsideAlerter(addTaskRef, setAddTaskOpen, 'mainWindow');
 
-    console.log(progress);
 
     const handleAddTask = () => {
-        let newTask = {
-            _id: `gdsgdfg${title}`,
-            title,
-            date: Cdate,
-            inbox: true,
-            labels,
-            description,
-            checkList,
-            other: {
-              default:{
-                priority: priority.title,
-                progress: progress.title,
-              },
-              posible:{
-                alarm,
-                repeat,
-              }
+        let newTask
+        let updatedCheckList = []
+        checkList.forEach((checklistEl) => {
+            if (checklistEl.title.length !== 0) {
+                console.log('====================================');
+                console.log(checklistEl);
+                console.log('====================================');
+                updatedCheckList.push(checklistEl)
             }
-        }
-        setTasks([...tasks, newTask])
-    }
+        })
 
-
-    function useOutsideAlerter(ref, setState) {
-        useEffect(() => {
-            function handleClickOutside(event) {
-                if (ref.current && !ref.current.contains(event.target)) {
-                    setState(false)
+        if (title.length > 2) {
+            newTask = {
+                _id: `gdsgdfg${title}`,
+                title,
+                date: Cdate,
+                inbox: true,
+                labels,
+                description,
+                checkList: updatedCheckList,
+                other: {
+                  default:{
+                    priority: priority.title ?  priority.title : '',
+                    progress: progress.title ? progress.title : '',
+                  },
+                  posible:{
+                    alarm,
+                    repeat,
+                  }
                 }
             }
+            setTasks([...tasks, newTask]) 
+            setAddTaskOpen(false)  
+        }
+        
+    }
 
+    function useOutsideAlerter(ref, setState, reftype) {
+
+        useEffect(() => {
+            function handleClickOutside(event) {
+                console.log(ref.current && !ref.current.contains(event.target));
+                if (ref.current && !ref.current.contains(event.target)) {
+                    if (reftype === 'mainWindow') {
+                        if (!title && !description && checkList.length == 1 && labels.length == 0 && !progress && !priority && Cdate == null) {
+                            setState(false)
+                        }else if (title || description || checkList || checkListItem || labels || progress || priority || Cdate) {
+                            setShakeWindow(true)
+                            setTimeout(() => {
+                                setShakeWindow(false)
+                            }, 500);
+                        }
+                    }else{
+                        setState(false)
+                    }
+                }
+            }
             document.addEventListener("mousedown", handleClickOutside);
             return () => {
                 document.removeEventListener("mousedown", handleClickOutside);
             };
-        }, [ref]);
+        }, [ref, title, description ,checkList ,labels ,progress ,priority ,Cdate]);
     }
+
+    
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
-            setCheckList([...checkList, {title: checkListItem, done: false}])
-            setCheckListItem('')
+            setCheckList([...checkList, {title: '', done: false}])
         }
       };
-
+    console.log(checkList);
     const pickLabel = (pickedLabel) => {
-        console.log(pickedLabel);
-        console.log(labels);
         if (labels.includes(pickedLabel)) {
             setLabels(labels.filter((label) => label !== pickedLabel))
-        }else if(labels.length < 3){
+        }else 
+        // if(labels.length < 3)
+        {
             setLabels([...labels, pickedLabel])
         }    
     }
 
     const calendarImgFunc = () => {
-        if (currentDate?.$D == Cdate?.$D) {
-            setClandarImg(todayIcon)
+        if (currentDate?.$D === Cdate?.$D) {
+            setClandarImg(Icons.todayIcon)
         }else if (Cdate?.$D - currentDate?.$D === 1) {
-            setClandarImg(tomorowIcon)
+            setClandarImg(Icons.tomorowIcon)
         }else if (currentDate?.$M === Cdate?.$M && Cdate?.$D - currentDate?.$D) {
-            setClandarImg(calendarActiveIcon)
+            setClandarImg(Icons.calendarActiveIcon)
             setDaysToPickedDate(Cdate?.$D - currentDate?.$D)
-            console.log(Cdate?.$D - currentDate?.$D);
+            // console.log(Cdate?.$D - currentDate?.$D);
+        } else {
+            setClandarImg(Icons.calendarGrayIcon)
         }
     }
 
+    const setListItems = (el) => {
+        let updatedList = checkList
+        let updatedEl = updatedList[el]
+        if (updatedList) {
+            
+        }
+        setCheckList()
+    }
     useEffect(() => {
         calendarImgFunc()
     }, [Cdate])
@@ -166,7 +177,9 @@ const AddTask = ({ setAddTaskOpen, setTasks, tasks }) => {
 
 
     return (
-        <div className='AddTaskWrapper'>
+        <div className={`AddTaskWrapper ${shakeWindow ? 'shakeWindow' : ''}`}
+            ref={addTaskRef}
+        >
             <input 
                 autoFocus 
                 type="text" 
@@ -185,45 +198,40 @@ const AddTask = ({ setAddTaskOpen, setTasks, tasks }) => {
                     onChange={(e) => setDescription(e.target.value)}
                 />
             </div>
-            {checkList.map((el) => (
-                <div className="ckeckListItem">
-                    <img src={circleChecklist} alt="" />
-                    <p>{el.title}</p>
-                </div>
+            {checkList.map((el, index) => (
+                    <CheckListItem 
+                        el={el}
+                        index={index} 
+                        handleKeyDown={handleKeyDown} 
+                        setCheckList={setCheckList}
+                        checkList={checkList}
+                    />
             ))}
-            <div className="inputWrapper">
-                <img src={checkListIcon} alt="" />
-                <input 
-                    type="text" 
-                    placeholder='Checklist'
-                    className='AddTaskInput'
-                    value={checkListItem}
-                    onChange={(e) => setCheckListItem(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                />
-            </div>
 
-            <div className="labels">
-                <div className="labelInput"
-                    onClick={() => setOpenSelectLabel(true)}
-                    ref={labelsRef}
-                >
-                    <div className="labelWrapper labelBtnWrapper">
+            <div className="labels"
+                ref={labelsRef}
+            >
+                <div className="labelInput">
+                    {labels.length < 1 && <div className="labelWrapper labelBtnWrapper"
+                        onClick={() => setOpenSelectLabel(true)}
+                    >
                         <p>no label</p>
-                    </div>
-                    {openSelectLabel && <div className="Select">
+                    </div>}
+                    {openSelectLabel && <div className="Select lableSelect">
                         {labelsVariants.map((label) => (
                             <div className="SelectUnit"
                                 onClick={() => pickLabel(label)}
                             >
-                                {labels.includes(label) ?  <img src={labelActiveIcon} alt="" /> : <img src={labelIcon} alt="" />}
+                                {labels.includes(label) ?  <img src={Icons.labelActiveIcon} alt="" /> : <img src={Icons.labelIcon} alt="" />}
                                 <p>{label}</p>
                             </div>  
                         ))}
                     </div>}
                 </div>
                 {labels.map((label) => (
-                    <div className="labelWrapper">
+                    <div className="labelWrapper"
+                        onClick={() => setOpenSelectLabel(true)}
+                    >
                         <p>{label}</p>
                     </div>
                 ))}
@@ -232,24 +240,26 @@ const AddTask = ({ setAddTaskOpen, setTasks, tasks }) => {
 
             <div className="settings">
                 <div className="settingsLeft">
-                    <img src={forwardTaskImg} alt="" />
+                    <img src={Icons.forwardTaskIcon} alt="" />
                     <p>Inbox</p>
                 </div>
                 <div className="settingsRight">
-                    <div className="other">
+                    {Cdate && <div className="other">
                         <div className="otherDivs"
-                            onClick={() => setAlarm(!alarm)}
+                            // onClick={() => setAlarm(!alarm)}
                         >
-                            <img src={alarm ? alarmClockGrayIcon : alarmClockIcon} alt="" />
+                            {alarm && <img src={Icons.alarmIcon} alt="" />}
                         </div>
                         {/*  */}
                         <div className="otherDivs"
-                            onClick={() => setRepeat(!repeat)}
+                            // onClick={() => setRepeat(!repeat)}
                         >
-                            <img src={repeat ? repeatGrayIcon : repeatIcon} alt="" />
+                            {repeat && <img src={Icons.repeatIcon} alt="" />}
                         </div>
-                    </div>
-                    <div className="calendarChoiceWrapper">
+                    </div>}
+                    <div className="calendarChoiceWrapper "
+                        ref={calendarRef}
+                    >
                         {currentDate?.$M === Cdate?.$M && Cdate?.$D - currentDate?.$D > 1 ?
                             <div className="imgIconWrapper">
                                 <img src={calendarImg} alt="" 
@@ -257,7 +267,7 @@ const AddTask = ({ setAddTaskOpen, setTasks, tasks }) => {
                                 />
                                 <p>{daysToPickedDate}</p>
                             </div> 
-                        : 
+                        :
                             <div className="imgIconWrapper">
                                 <img src={calendarImg} alt="" 
                                     onClick={() => setOpenSelectDate(!openSelectDate)}
@@ -265,46 +275,37 @@ const AddTask = ({ setAddTaskOpen, setTasks, tasks }) => {
                             </div> 
                         }
                         {openSelectDate && <DatePicker
-                            calendarRef={calendarRef}
+                            currentDate={currentDate}
                             Cdate={Cdate} 
                             setDate={setDate}
                             setOpenSelectDate={setOpenSelectDate}
+                            alarm={alarm}
+                            setAlarm={setAlarm}
+                            repeat={repeat}
+                            setRepeat={setRepeat}
                         />}
                     </div>
                     <div className="progressChoiceWrapper"
-                        onClick={() => setOpenSelectProgress(true)}
+                        onClick={() => setOpenSelectProgress(!openSelectProgress)}
                         ref={progressRef}
                     >
-                        {progress ? <img src={progress.icon} alt="" /> : <img src={ToDo} alt="" />}
-                        {openSelectProgress && 
-                        <div className="Select selectProgress">
-                            {progressVariants.map((Item) => (
-                                <div className="SelectUnit"
-                                    onClick={() => setProgress(Item)}
-                                >
-                                    <img src={Item.icon} alt="" />
-                                    <p>{Item.title}</p>
-                                </div>  
-                            ))}
-                        </div>}
+                        {progress ? <img src={progress.icon} alt="" /> : <img src={Icons.ToDoIcon} alt="" />}
+                        {openSelectProgress && <Progress 
+                            progressVariants={progressVariants} 
+                            setProgress={setProgress} 
+                        />}
                     </div>
 
                     <div className="priorityChoiceWrapper"
-                        onClick={() => setOpenSelectPriority(true)}
+                        onClick={() => setOpenSelectPriority(!openSelectPriority)}
                         ref={priorityRef}
                     >
-                        {priority ? <img src={priority.icon} alt="" /> : <img src={flagGray} alt="" />}
+                        {priority ? <img src={priority.icon} alt="" /> : <img src={Icons.FlagGrayIcon} alt="" />}
                         {openSelectPriority && 
-                        <div className="Select selectProgress">
-                            {priorityVariants.map((Item) => (
-                                <div className="SelectUnit"
-                                    onClick={() => setPriority(Item)}
-                                >
-                                    <img src={Item.icon} alt="" />
-                                    <p>{Item.title}</p>
-                                </div>  
-                            ))}
-                        </div>}
+                        <Prority 
+                            priorityVariants={priorityVariants}
+                            setPriority={setPriority}
+                        />}
                     </div>
                 </div>
             </div>
@@ -323,7 +324,7 @@ const AddTask = ({ setAddTaskOpen, setTasks, tasks }) => {
             <div className="closeBtn"
                 onClick={() => setAddTaskOpen(false)}
             >
-                <img src={closeBtnAddTask} alt="" />
+                <img src={Icons.closeBtnAddTask} alt="" />
             </div>
         </div>
     )

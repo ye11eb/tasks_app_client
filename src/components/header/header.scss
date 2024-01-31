@@ -1,6 +1,6 @@
 .headerWrapper{
     height: 64px;
-    width: 500px;
+    width: 100vw;
     align-items: center;
     padding: 0 15px;
     .headerTop{
@@ -103,6 +103,9 @@
         border-bottom: 1px solid rgba(0, 0, 0, 0.38);
         .headerTop{
             .headerTopLeft{ 
+                p{
+                    color: rgba(0, 0, 0, 0.87);
+                }
                 .headerTopActiveButton{
                     p{ 
                         font-family: 'SF Pro Display', sans-serif;               

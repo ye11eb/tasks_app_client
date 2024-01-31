@@ -8,6 +8,10 @@
   scroll-behavior: smooth;
 }
 
+a{
+  text-decoration: none;
+}
+
 .addTaskButton{
   width: 36px;
   height: 36px;
@@ -81,7 +85,7 @@
 
 body {
   margin: 0;
-  width: 100%;
+  width: 100vw;
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -103,8 +107,7 @@ p{
 }
 
 .App{
-  width: 500px;
-  height: 620px;
+  width: 100vw;
+  height: 100vh;
   position: relative;
-  border: 1px solid rgba(0, 0, 0, 0.38);
 }

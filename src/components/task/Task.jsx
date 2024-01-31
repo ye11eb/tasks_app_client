@@ -1,49 +1,52 @@
 import React, { useEffect, useState } from 'react'
 import './task.scss'
 import dayjs from 'dayjs';
+import Icons from '../../utils/ThemeIconPicker'
+import OpenedTaskBody from './components/OpenedTaskBody/OpenedTaskBody';
+import Progress from '../dropdowns/Progress';
+import { Prority } from '../dropdowns/Prority';
 
-//Icons
-import taskIcon from '../../media/taskIcon.svg'
-import iconTask1 from '../../media/iconTask1.svg'
-import CheckListItemsIcon from '../../media/CheckListItemsIcon.svg'
-
-//Flag icons
-import FlagRed from '../../media/flags/flagRed.svg'
-import FlagGray from '../../media/flags/flagGray.svg'
-import FlagOrange from '../../media/flags/flagOrange.svg'
-
-//calendars icon
-import todayIcon from '../../media/calendar/todayIcon.svg'
-import tomorowIcon from '../../media/calendar/tomorowIcon.svg'
-import calendarActiveIcon from '../../media/calendar/calendarIcon.svg'
-import calendarGray from '../..//media/calendar/calendar.svg'
-
-//Status icons
-import ToDo from '../../media/progress/ToDo.svg'
-import InProgress from '../../media/progress/InProgress.svg'
-import OnTesting from '../../media/progress/OnTesting.svg'
-import Done from '../../media/progress/Done.svg'
-
-//Posible icons
-import repeatIcon from '../../media/posible/repeat.svg'
-import alarmIcon from '../../media/posible/alarmClock.svg'
-
-import checkListIcon from '../../media/posible/checkListIcon.svg'
-import labelIcon from '../../media/posible/labelIcon.svg'
-import descriptonIcon from '../../media/posible/descriptonIcon.svg'
-// import InProgress from '../../media/progress/InProgress.svg'
-// import OnTesting from '../../media/progress/OnTesting.svg'
-// import Done from '../../media/progress/Done.svg'
-
-
-const Task = ({ element, tasks, updateTask, handleDragStart, handleDragOver, handleDrop, index, underlineAfterIndex }) => {
+const Task = ({ 
+    element,
+    tasks,
+    setTasks,
+    updateTask,
+    handleDragStart,
+    handleDragOver,
+    handleDrop,
+    index,
+    underlineAfterIndex,
+    prevIndex,
+    theme }) => {
+    
     const [active, setActive] = useState(element.active)
     const [opened, setOpened] = useState(element.opened)
-    const [calendarImg, setClandarImg] = useState('')
+    const [openedAnim, setOpenedAnim] = useState(false)
+    const [calendarActImg, setClandarActImg] = useState(Icons.calendarActiveIcon)
     const [daysToPickedDate, setDaysToPickedDate] = useState(0)
+    const [progress, setProgress] = useState({title: element.other?.default?.progress})
+    const [priority, setPriority] = useState({title: element.other?.default?.priority})
+    const [currentTaskDragged, setCurrentTaskDragged] = useState(false)
+
+    const progressVariants = [
+        {title: 'To Do', icon: Icons.ToDoIcon},
+        {title: 'On Testing', icon: Icons.OnTestingIcon},
+        {title: 'In Progress', icon: Icons.InProgressIcon},
+        {title: 'Done', icon: Icons.DoneIcon}
+    ]
+    const [openSelectProgress, setOpenSelectProgress] = useState(false)
+
+    //priority
+    const priorityVariants = [
+        {title: 'High', icon: Icons.FlagRedIcon},
+        {title: 'Medium', icon: Icons.FlagOrangeIcon},
+        {title: 'None', icon: Icons.FlagGrayIcon}
+    ]
+    const [openSelectPriority, setOpenSelectPriority] = useState(false)
+
     let currentDate = dayjs(new Date())
     let elementDate = dayjs(element?.date)
-    console.log(elementDate);
+
 
     useEffect(() => {
         setOpened(element.opened)
@@ -51,14 +54,25 @@ const Task = ({ element, tasks, updateTask, handleDragStart, handleDragOver, han
     }, [element, tasks])
 
     const calendarImgFunc = () => {
-        if (currentDate?.$D == elementDate?.$D) {
-            setClandarImg(todayIcon)
+        if (currentDate?.$D === elementDate?.$D) {
+            setClandarActImg(Icons.todayIcon)
         }else if (elementDate?.$D - currentDate?.$D === 1) {
-            setClandarImg(tomorowIcon)
+            setClandarActImg(Icons.tomorowIcon)
         }else if (currentDate?.$M === elementDate?.$M && elementDate?.$D - currentDate?.$D) {
-            setClandarImg(calendarActiveIcon)
+            setClandarActImg(Icons.calendarActiveIcon)
             setDaysToPickedDate(elementDate?.$D - currentDate?.$D)
             console.log(elementDate?.$D - currentDate?.$D);
+        }else{
+            setClandarActImg(Icons.calendarGrayIcon)
+        }
+    }
+
+    const handleOpenDropdowns = (setState, state) => {
+        if (opened) {
+            console.log('====================================');
+            console.log(handleOpenDropdowns);
+            console.log('====================================');
+            setState(!state) 
         }
     }
 
@@ -66,87 +80,460 @@ const Task = ({ element, tasks, updateTask, handleDragStart, handleDragOver, han
         calendarImgFunc()
     }, [])
 
+    useEffect(() => {
+        setOpenedAnim(element.opened)
+    }, [opened])
+
+    
+
+    const handleSetTaskVisible = () => {
+        setCurrentTaskDragged(false)
+    }
+
+    const handleDrags = (e, index, value) => {
+        switch (value) {
+            case 'handleDragStart':
+                handleDragStart(e, index)
+                setCurrentTaskDragged(true)
+            break;
+            case 'handleDragOver':
+                handleDragOver(e, index)
+                // setCurrentTaskDragged(false)
+            break;
+            case 'handleDrop':
+                handleDrop(e, index, handleSetTaskVisible)
+            break;
+        
+            default:
+                break;
+        }
+    }
+
+    const handleUpdateTask = (key) => {
+        switch (key) {
+            case 'active':
+                updateTask(element, 'active')
+                break;
+        
+            case 'opened':
+                if (opened) {
+                    console.log('====================================');
+                    console.log('setOpenedAnim(false)');
+                    console.log('====================================');
+                    setOpenedAnim(false)
+                    setTimeout(() => {
+                        updateTask(element, 'opened')
+                    }, 300);
+                }else{
+                    updateTask(element, 'opened')
+                    setOpenedAnim(true)
+                }
+                
+            break;
+            default:
+                break;
+        }
+    }
+
     return (
         <div className={
-            opened ? `taskWrapper taskWrapperActive ${underlineAfterIndex && ' underlined'}` 
-            : active ? `taskWrapper taskWrapperActive ${underlineAfterIndex && ' underlined'}` 
-            : `taskWrapper notActiveTaskWrapper${underlineAfterIndex === index && ' underlined'}`   
+            opened ? `taskWrapper taskWrapperActive opened ${currentTaskDragged ? 'currentTaskDragged' : ''} ${openedAnim ? ' wrapperOpenedAnim' : ''}` 
+            : active ? `taskWrapper taskWrapperActive ${currentTaskDragged ? 'currentTaskDragged' : ''} ${openedAnim ? ' wrapperOpenedAnim' : ''}` 
+            : `taskWrapper notActiveTaskWrapper ${currentTaskDragged ? 'currentTaskDragged' : ''} ${openedAnim ? ' wrapperOpenedAnim' : ''}`   
         }
-            onClick={() => updateTask(element, 'active')}
-            onDoubleClick={() => updateTask(element, 'opened')}
+            onClick={() => handleUpdateTask('active')}
+            onDoubleClick={() => handleUpdateTask('opened')}
             draggable
-            onDragStart={(e) => handleDragStart(e, index)}
-            onDragOver={(e) => handleDragOver(e, index)}
-            onDrop={(e) => handleDrop(e, index)}
-        >
-            {underlineAfterIndex === index && <div className="underline" />}
+            onDragStart={(e) => handleDrags(e, index, 'handleDragStart')}
+            onDragOver={(e) => handleDragOver(e, index, 'handleDragOver')}
+            onDrop={(e) => handleDrags(e, index, 'handleDrop')}
+        >   
+            {underlineAfterIndex === index && underlineAfterIndex !== prevIndex && index !== tasks.length-1 && prevIndex > index && (
+                <div className="holderToshowDragged" />
+            )}
+            <div className={`holderToshowDragged ${underlineAfterIndex === index && underlineAfterIndex !== prevIndex && index !== tasks.length-1 && prevIndex > index ? 'holderToshowDraggedShowed' : ''}`} />
+
+            {/* {underlineAfterIndex === 1 && index == 1 && underlineAfterIndex !== prevIndex && (
+                <div className="holderToshowDragged" />
+            )} */}
+
+            {/* {underlineAfterIndex === index && <div className="underline" />} */}
             <div className="taskTop">
                 <div className="checkListItemsLeft">
-                    <img src={taskIcon} alt="" />
+                    <img src={Icons.taskIcon} alt="" />
                     <p>{element.title}</p>
                     <div className="taskIcons">
-                        {element?.description?.length >= 1 && <img src={descriptonIcon} alt='descriptonIcon'/>} 
-                        {element?.checkList?.length >= 1 && <img src={checkListIcon} alt='checkListIcon'/>} 
-                        {element?.labels?.length >= 1 && <img src={labelIcon} alt='labelIcon'/>}  
+                        {element?.description?.length >= 2 && <img src={Icons.descriptonIcon} alt='descriptonIcon'/>}
+                        {element?.checkList?.length >= 1 && <img src={Icons.checkListIcon} alt='checkListIcon'/>} 
+                        {element?.labels?.length >= 1 && <img src={Icons.labelIcon} alt='labelIcon'/>}
                     </div>
                 </div>
 
                 <div className="checkListItemsRight">
                     <div className="checkListItemsRightPosible">
-                        {element.other?.posible?.repeat && <img src={repeatIcon} alt='repeatIcon'/>} 
-                        {element.other?.posible?.alarm && <img src={alarmIcon} alt='alarmIcon'/>}  
+                        {element.other?.posible?.repeat && <img src={Icons.repeatIcon} alt='repeatIcon'/>} 
+                        {element.other?.posible?.alarm && <img src={Icons.alarmIcon} alt='alarmIcon'/>}  
                     </div>
 
                     {currentDate?.$M === elementDate?.$M && elementDate?.$D - currentDate?.$D > 1 ?
                         <div className="checkListItemsRightDate">
-                            <img src={calendarImg} alt="" />
+                            <img src={calendarActImg} alt="" />
                             <p>{daysToPickedDate}</p>
                         </div> 
                     : 
                         <div className="checkListItemsRightDate">
-                            <img src={calendarImg} alt=""/>
+                            <img src={calendarActImg} alt=""/>
                         </div> 
                     }
 
                     <div className="checkListItemsRightDefault">
-                        {element.other?.default?.progress === 'To Do' && <img src={ToDo} alt='ToDo'/>} 
-                        {element.other?.default?.progress === 'On Testing' && <img src={InProgress} alt='InProgress' />} 
-                        {element.other?.default?.progress === 'In Progress' && <img src={OnTesting} alt='OnTesting' />} 
-                        {element.other?.default?.progress === 'Done' && <img src={Done} alt='Done' />} 
+                        <div className="defaultImgWrapper"
+                            onClick={() => handleOpenDropdowns(setOpenSelectProgress, openSelectProgress)}
+                        >
+                            {progress.title === '' && <img src={Icons.ToDoIcon} alt='ToDo'/>} 
+                            {progress.title === 'To Do' && <img src={Icons.ToDoIcon} alt='ToDo'/>} 
+                            {progress.title === 'On Testing' && <img src={Icons.OnTestingIcon} alt='InProgress' />} 
+                            {progress.title === 'In Progress' && <img src={Icons.InProgressIcon} alt='OnTesting' />} 
+                            {progress.title === 'Done' && <img src={Icons.DoneIcon} alt='Done' />} 
+                        </div>
 
-                        {element.other?.default?.priority === 'None' && <img src={FlagGray} alt='FlagGray' />} 
-                        {element.other?.default?.priority === 'Medium' && <img src={FlagOrange} alt='FlagOrange' />} 
-                        {element.other?.default?.priority === 'High' && <img src={FlagRed} alt='FlagRed' />} 
+                        <div className="defaultImgWrapper"
+                            onClick={() => handleOpenDropdowns(setOpenSelectPriority, openSelectPriority)}
+                        >
+                            {priority.title === '' && <img src={Icons.FlagGrayIcon} alt='ToDo'/>} 
+                            {priority.title === 'None' && <img src={Icons.FlagGrayIcon} alt='FlagGray' />} 
+                            {priority.title === 'Medium' && <img src={Icons.FlagOrangeIcon} alt='FlagOrange' />} 
+                            {priority.title === 'High' && <img src={Icons.FlagRedIcon} alt='FlagRed' />} 
+                        </div>
+                        {openSelectProgress && <Progress progressVariants={progressVariants} setProgress={setProgress}/>}
+                        {openSelectPriority && <Prority priorityVariants={priorityVariants} setPriority={setPriority}/>}
                     </div>
                 </div>
 
             </div>
-            {opened && 
-                (
-                    <div className="taskBody">
-                        {element?.description && <p className="description">
-                            {element?.description}
-                        </p>}
-                        {element?.checkList?.map((el) => (
-                            <div className="checkListItemsWrapper">
-                                <div className="checkListItem">
-                                    <img src={CheckListItemsIcon} alt="" />
-                                    <p>{el.title}</p>
-                                </div>
-                            </div>
-                        ))}
-                        <div className="taskBottom">
-                            {element?.labels?.map((label) => (
-                                <div className="labelWrapper">
-                                    <p>{label}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )
-            }
+            <div className={`taskBodyWrapper ${openedAnim ? 'openedAnim' : ''}`}>
+                {opened && <OpenedTaskBody element={element} setTasks={setTasks} tasks={tasks} />}
+            </div>
+
+            <div className={`holderToshowDragged ${underlineAfterIndex === index && underlineAfterIndex !== prevIndex && (prevIndex < index || index == tasks.length-1) ? 'holderToshowDraggedShowed' : ''}`} />
         </div>
     )
 }
 
 export default Task
+
+
+
+// import React, { useEffect, useRef, useState } from 'react'
+// import './task.scss'
+// import dayjs from 'dayjs';
+// import Icons from '../../utils/ThemeIconPicker'
+// import OpenedTaskBody from './components/OpenedTaskBody/OpenedTaskBody';
+// import Progress from '../dropdowns/Progress';
+// import { Prority } from '../dropdowns/Prority';
+
+// const Task = ({ 
+//     element,
+//     tasks,
+//     setTasks,
+//     updateTask,
+//     handleDragStart,
+//     handleDragOver,
+//     handleDrop,
+//     index,
+//     underlineAfterIndex,
+//     theme,
+//     mousePos }) => {
+    
+//     const [active, setActive] = useState(element.active)
+//     const [opened, setOpened] = useState(element.opened)
+//     const [calendarActImg, setClandarActImg] = useState(Icons.calendarActiveIcon)
+//     const [daysToPickedDate, setDaysToPickedDate] = useState(0)
+//     const [progress, setProgress] = useState({title: element.other?.default?.progress})
+//     const [priority, setPriority] = useState({title: element.other?.default?.priority})
+//     const [currentTaskDragged, setCurrentTaskDragged] = useState(false)
+//     const [currentTaskPos, setCurrentTaskPos] = useState(false)
+//     // const [mousePos, setMousePos] = useState();
+
+//     const progressVariants = [
+//         {title: 'To Do', icon: Icons.ToDoIcon},
+//         {title: 'On Testing', icon: Icons.OnTestingIcon},
+//         {title: 'In Progress', icon: Icons.InProgressIcon},
+//         {title: 'Done', icon: Icons.DoneIcon}
+//     ]
+//     const [openSelectProgress, setOpenSelectProgress] = useState(false)
+
+//     //priority
+//     const priorityVariants = [
+//         {title: 'High', icon: Icons.FlagRedIcon},
+//         {title: 'Medium', icon: Icons.FlagOrangeIcon},
+//         {title: 'None', icon: Icons.FlagGrayIcon}
+//     ]
+//     const [openSelectPriority, setOpenSelectPriority] = useState(false)
+
+//     let currentDate = dayjs(new Date())
+//     let elementDate = dayjs(element?.date)
+
+//     let taskref = useRef()
+
+
+//     useEffect(() => {
+//         setOpened(element.opened)
+//         setActive(element.active)
+//     }, [element, tasks])
+
+//     const calendarImgFunc = () => {
+//         if (currentDate?.$D === elementDate?.$D) {
+//             setClandarActImg(Icons.todayIcon)
+//         }else if (elementDate?.$D - currentDate?.$D === 1) {
+//             setClandarActImg(Icons.tomorowIcon)
+//         }else if (currentDate?.$M === elementDate?.$M && elementDate?.$D - currentDate?.$D) {
+//             setClandarActImg(Icons.calendarActiveIcon)
+//             setDaysToPickedDate(elementDate?.$D - currentDate?.$D)
+//             // console.log(elementDate?.$D - currentDate?.$D);
+//         }else{
+//             setClandarActImg(Icons.calendarGrayIcon)
+//         }
+//     }
+
+//     const handleOpenDropdowns = (setState, state) => {
+//         if (opened) {
+//             // console.log('====================================');
+//             // console.log(handleOpenDropdowns);
+//             // console.log('====================================');
+//             setState(!state) 
+//         }
+//     }
+
+//     // console.log('====================================');
+//     // console.log(mousePos);
+//     // console.log('====================================');
+
+//     useEffect(() => {
+//         calendarImgFunc()
+//     }, [])
+
+//     useEffect(() => {
+//         setOpenSelectPriority(false)
+//         setOpenSelectProgress(false)
+//     }, [progress, priority]);
+//     const onMouseDownHandler = (e) => {
+//         console.log('====================================');
+//         console.log(e);
+//         setCurrentTaskDragged(true)
+        
+//         console.log('====================================');
+//     }
+//     const onMouseMoveHandler = (e) => {
+//         setCurrentTaskPos(e.clientY)
+        
+//         console.log('====================================');
+//     }
+
+//     // useEffect(() => {
+
+//     //     // ball.onmousedown = function(event) {
+//     //     //     // (1) prepare to moving: make absolute and on top by z-index
+//     //     //     ball.style.position = 'absolute';
+//     //     //     ball.style.zIndex = 1000;
+          
+//     //     //     // move it out of any current parents directly into body
+//     //     //     // to make it positioned relative to the body
+//     //     //     document.body.append(ball);
+          
+//     //     //     // centers the ball at (pageX, pageY) coordinates
+//     //     //     function moveAt(pageX, pageY) {
+//     //     //       ball.style.left = pageX - ball.offsetWidth / 2 + 'px';
+//     //     //       ball.style.top = pageY - ball.offsetHeight / 2 + 'px';
+//     //     //     }
+          
+//     //     //     // move our absolutely positioned ball under the pointer
+//     //     //     moveAt(event.pageX, event.pageY);
+          
+//     //     //     function onMouseMove(event) {
+//     //     //       moveAt(event.pageX, event.pageY);
+//     //     //     }
+          
+//     //     //     // (2) move the ball on mousemove
+//     //     //     document.addEventListener('mousemove', onMouseMove);
+          
+//     //     //     // (3) drop the ball, remove unneeded handlers
+//     //     //     ball.onmouseup = function() {
+//     //     //       document.removeEventListener('mousemove', onMouseMove);
+//     //     //       ball.onmouseup = null;
+//     //     //     };
+          
+//     //     //   };
+//     // }, [handleDrop])
+
+//     const handleDrags = (e, index, value) => {
+//         switch (value) {
+//             case 'handleDragStart':
+//                 handleDragStart(e, index)
+//                 setCurrentTaskDragged(true)
+//             break;
+//             case 'handleDragOver':
+//                 handleDragOver(e, index)
+//                 setCurrentTaskDragged(false)
+//             break;
+//             case 'handleDrop':
+//                 handleDrop(e, index)
+//                 setCurrentTaskDragged(false)
+//             break;
+        
+//             default:
+//                 break;
+//         }
+//     }
+
+//     return (
+//     <>
+//         {currentTaskDragged ?<div className={
+//             opened ? `taskWrapper taskWrapperActive ${currentTaskDragged && ' taskDragged'}` 
+//             : active ? `taskWrapper taskWrapperActive ${currentTaskDragged && ' taskDragged'}` 
+//             : `taskWrapper notActiveTaskWrapper ${currentTaskDragged && ' taskDragged'}`      
+//         }   
+//             style={{ top: `${currentTaskPos}`}}
+//             onClick={() => updateTask(element, 'active')}
+//             onDoubleClick={() => updateTask(element, 'opened')}
+//             // draggable
+//             onMouseDown={(e) => onMouseDownHandler(e)}
+//             onMouseMove={(e) => onMouseMoveHandler(e)}
+//             // onDragStart={(e) => handleDrags(e, index, 'handleDragStart')}
+//             // onDragOver={(e) => handleDragOver(e, index, 'handleDragOver')}
+//             // onDrop={(e) => handleDrags(e, index, 'handleDrop')}
+//         >
+//              {underlineAfterIndex === index  && (
+//                 <div className="holderToshowDragged"></div>
+//             )}
+//             <div className="taskTop">
+//                 <div className="checkListItemsLeft">
+//                     <img src={Icons.taskIcon} alt="" />
+//                     <p>{element.title}</p>
+//                     <div className="taskIcons">
+//                         {element?.description?.length >= 1 && <img src={Icons.descriptonIcon} alt='descriptonIcon'/>}
+//                         {element?.checkList?.length >= 1 && <img src={Icons.checkListIcon} alt='checkListIcon'/>} 
+//                         {element?.labels?.length >= 1 && <img src={Icons.labelIcon} alt='labelIcon'/>}
+//                     </div>
+//                 </div>
+
+//                 <div className="checkListItemsRight">
+//                     <div className="checkListItemsRightPosible">
+//                         {element.other?.posible?.repeat && <img src={Icons.repeatIcon} alt='repeatIcon'/>} 
+//                         {element.other?.posible?.alarm && <img src={Icons.alarmIcon} alt='alarmIcon'/>}  
+//                     </div>
+
+//                     {currentDate?.$M === elementDate?.$M && elementDate?.$D - currentDate?.$D > 1 ?
+//                         <div className="checkListItemsRightDate">
+//                             <img src={calendarActImg} alt="" />
+//                             <p>{daysToPickedDate}</p>
+//                         </div> 
+//                     : 
+//                         <div className="checkListItemsRightDate">
+//                             <img src={calendarActImg} alt=""/>
+//                         </div> 
+//                     }
+
+//                     <div className="checkListItemsRightDefault">
+//                         <div className="defaultImgWrapper"
+//                             onClick={() => handleOpenDropdowns(setOpenSelectProgress, openSelectProgress)}
+//                         >
+//                             {progress.title === '' && <img src={Icons.ToDoIcon} alt='ToDo'/>} 
+//                             {progress.title === 'To Do' && <img src={Icons.ToDoIcon} alt='ToDo'/>} 
+//                             {progress.title === 'On Testing' && <img src={Icons.OnTestingIcon} alt='InProgress' />} 
+//                             {progress.title === 'In Progress' && <img src={Icons.InProgressIcon} alt='OnTesting' />} 
+//                             {progress.title === 'Done' && <img src={Icons.DoneIcon} alt='Done' />} 
+//                         </div>
+
+//                         <div className="defaultImgWrapper"
+//                             onClick={() => handleOpenDropdowns(setOpenSelectPriority, openSelectPriority)}
+//                         >
+//                             {priority.title === '' && <img src={Icons.FlagGrayIcon} alt='ToDo'/>} 
+//                             {priority.title === 'None' && <img src={Icons.FlagGrayIcon} alt='FlagGray' />} 
+//                             {priority.title === 'Medium' && <img src={Icons.FlagOrangeIcon} alt='FlagOrange' />} 
+//                             {priority.title === 'High' && <img src={Icons.FlagRedIcon} alt='FlagRed' />} 
+//                         </div>
+//                         {openSelectProgress && <Progress progressVariants={progressVariants} setProgress={setProgress}/>}
+//                         {openSelectPriority && <Prority priorityVariants={priorityVariants} setPriority={setPriority}/>}
+//                     </div>
+//                 </div>
+
+//             </div>
+//             {opened && <OpenedTaskBody element={element} setTasks={setTasks} tasks={tasks} />}
+//         </div> : <div className={
+//             opened ? `taskWrapper taskWrapperActive ${currentTaskDragged && ' taskDragged'}` 
+//             : active ? `taskWrapper taskWrapperActive ${currentTaskDragged && ' taskDragged'}` 
+//             : `taskWrapper notActiveTaskWrapper ${currentTaskDragged && ' taskDragged'}`      
+//         }   
+//             style={{ top: mousePos}}
+//             onClick={() => updateTask(element, 'active')}
+//             onDoubleClick={() => updateTask(element, 'opened')}
+//             draggable
+//             onDragStart={(e) => handleDrags(e, index, 'handleDragStart')}
+//             onDragOver={(e) => handleDragOver(e, index, 'handleDragOver')}
+//             onDrop={(e) => handleDrags(e, index, 'handleDrop')}
+//         >
+//              {underlineAfterIndex === index  && (
+//                 <div className="holderToshowDragged"></div>
+//             )}
+//             <div className="taskTop">
+//                 <div className="checkListItemsLeft">
+//                     <img src={Icons.taskIcon} alt="" />
+//                     <p>{element.title}</p>
+//                     <div className="taskIcons">
+//                         {element?.description?.length >= 1 && <img src={Icons.descriptonIcon} alt='descriptonIcon'/>}
+//                         {element?.checkList?.length >= 1 && <img src={Icons.checkListIcon} alt='checkListIcon'/>} 
+//                         {element?.labels?.length >= 1 && <img src={Icons.labelIcon} alt='labelIcon'/>}
+//                     </div>
+//                 </div>
+
+//                 <div className="checkListItemsRight">
+//                     <div className="checkListItemsRightPosible">
+//                         {element.other?.posible?.repeat && <img src={Icons.repeatIcon} alt='repeatIcon'/>} 
+//                         {element.other?.posible?.alarm && <img src={Icons.alarmIcon} alt='alarmIcon'/>}  
+//                     </div>
+
+//                     {currentDate?.$M === elementDate?.$M && elementDate?.$D - currentDate?.$D > 1 ?
+//                         <div className="checkListItemsRightDate">
+//                             <img src={calendarActImg} alt="" />
+//                             <p>{daysToPickedDate}</p>
+//                         </div> 
+//                     : 
+//                         <div className="checkListItemsRightDate">
+//                             <img src={calendarActImg} alt=""/>
+//                         </div> 
+//                     }
+
+//                     <div className="checkListItemsRightDefault">
+//                         <div className="defaultImgWrapper"
+//                             onClick={() => handleOpenDropdowns(setOpenSelectProgress, openSelectProgress)}
+//                         >
+//                             {progress.title === '' && <img src={Icons.ToDoIcon} alt='ToDo'/>} 
+//                             {progress.title === 'To Do' && <img src={Icons.ToDoIcon} alt='ToDo'/>} 
+//                             {progress.title === 'On Testing' && <img src={Icons.OnTestingIcon} alt='InProgress' />} 
+//                             {progress.title === 'In Progress' && <img src={Icons.InProgressIcon} alt='OnTesting' />} 
+//                             {progress.title === 'Done' && <img src={Icons.DoneIcon} alt='Done' />} 
+//                         </div>
+
+//                         <div className="defaultImgWrapper"
+//                             onClick={() => handleOpenDropdowns(setOpenSelectPriority, openSelectPriority)}
+//                         >
+//                             {priority.title === '' && <img src={Icons.FlagGrayIcon} alt='ToDo'/>} 
+//                             {priority.title === 'None' && <img src={Icons.FlagGrayIcon} alt='FlagGray' />} 
+//                             {priority.title === 'Medium' && <img src={Icons.FlagOrangeIcon} alt='FlagOrange' />} 
+//                             {priority.title === 'High' && <img src={Icons.FlagRedIcon} alt='FlagRed' />} 
+//                         </div>
+//                         {openSelectProgress && <Progress progressVariants={progressVariants} setProgress={setProgress}/>}
+//                         {openSelectPriority && <Prority priorityVariants={priorityVariants} setPriority={setPriority}/>}
+//                     </div>
+//                 </div>
+
+//             </div>
+//             {opened && <OpenedTaskBody element={element} setTasks={setTasks} tasks={tasks} />}
+//         </div>}
+//     </>
+
+//     )
+// }
+
+// export default Task
