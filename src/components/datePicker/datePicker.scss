@@ -1,8 +1,8 @@
 .calendarWrapper{
     position: absolute;
-    min-height: 220px;
-    max-height: 240px;
-    height: 240px;
+    min-height: 220px !important;
+    max-height: 240px !important;
+    height: 240px !important;
     width: 240px;
     z-index: 2121;
     box-shadow: 0px 3px 5px -1px #00000033;
@@ -60,15 +60,15 @@
             }
         }
     }
+    // .MuiPickersFadeTransitionGroup-root{
+    //     >div{
+    //         height: 220px;
+    //     }
+    // }
+
     .MuiPickersFadeTransitionGroup-root{
         >div{
-            height: 220px;
-        }
-    }
-
-    .css-31ca4x-MuiPickersFadeTransitionGroup-root{
-        >div{
-            height: 24px;
+            height: 24px !important;
         }
     }
     .MuiStack-root{
@@ -139,6 +139,7 @@
     }
     
     .MuiDateCalendar-root{
+        height: 240px !important;
         width: 210px;
         .MuiPickersCalendarHeader-label{
             font-feature-settings: 'clig' off, 'liga' off;
@@ -193,9 +194,9 @@
 }
 
 // .MuiStack-root{
-    .MuiStack-root{
-        height: unset !important;
-    }
+// .MuiStack-root{
+//     height: unset !important;
+// }
 
 
 
