@@ -10,8 +10,8 @@ function App() {
   const [currentView, setCurrentView] = useState('All Tasks')
   const [tasks, setTasks] = useState([
     {
-      _id: 'gdsgdfg',
-      title: 'Task 1',
+      _id: 'gdsg2222222222222222222dfg',
+      title: 'Task 21',
       "date": "2024-01-30T22:00:00.000Z",
       inbox: true,
       labels: ['Label_2', 'Label_3'],
