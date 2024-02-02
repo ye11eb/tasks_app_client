@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './task.scss'
 import dayjs from 'dayjs';
 import Icons from '../../utils/ThemeIconPicker'
@@ -7,6 +7,7 @@ import Progress from '../dropdowns/Progress';
 import { Prority } from '../dropdowns/Prority';
 
 const Task = ({ 
+    groupArray,
     element,
     tasks,
     setTasks,
@@ -17,8 +18,13 @@ const Task = ({
     index,
     underlineAfterIndex,
     prevIndex,
+    fromGroup,
+    indexSecAgo,
+    group,
+    dataZone,
+    willBeGroup,
     theme }) => {
-    
+    // console.log(element);
     const [active, setActive] = useState(element.active)
     const [opened, setOpened] = useState(element.opened)
     const [openedAnim, setOpenedAnim] = useState(false)
@@ -27,6 +33,11 @@ const Task = ({
     const [progress, setProgress] = useState({title: element.other?.default?.progress})
     const [priority, setPriority] = useState({title: element.other?.default?.priority})
     const [currentTaskDragged, setCurrentTaskDragged] = useState(false)
+    const [onThisTaskDrag, setOnThisTaskDrag] = useState(false)
+
+    const fatherArrayForTask = group ? group.tasks :tasks;
+
+    const taskRef = useRef()
 
     const progressVariants = [
         {title: 'To Do', icon: Icons.ToDoIcon},
@@ -61,7 +72,7 @@ const Task = ({
         }else if (currentDate?.$M === elementDate?.$M && elementDate?.$D - currentDate?.$D) {
             setClandarActImg(Icons.calendarActiveIcon)
             setDaysToPickedDate(elementDate?.$D - currentDate?.$D)
-            console.log(elementDate?.$D - currentDate?.$D);
+            // console.log(elementDate?.$D - currentDate?.$D);
         }else{
             setClandarActImg(Icons.calendarGrayIcon)
         }
@@ -69,9 +80,6 @@ const Task = ({
 
     const handleOpenDropdowns = (setState, state) => {
         if (opened) {
-            console.log('====================================');
-            console.log(handleOpenDropdowns);
-            console.log('====================================');
             setState(!state) 
         }
     }
@@ -81,27 +89,40 @@ const Task = ({
     }, [])
 
     useEffect(() => {
+        setOnThisTaskDrag(indexSecAgo === index)
+    }, [indexSecAgo])
+    
+
+    useEffect(() => {
         setOpenedAnim(element.opened)
     }, [opened])
+
+    useEffect(() => {
+        if (group) {
+            setOpened(element.opened)
+            setActive(element.active)
+        }
+    }, [groupArray])
 
     
 
     const handleSetTaskVisible = () => {
-        setCurrentTaskDragged(false)
+        // setCurrentTaskDragged(false)
     }
 
     const handleDrags = (e, index, value) => {
         switch (value) {
             case 'handleDragStart':
-                handleDragStart(e, index)
+                handleDragStart(e, index, fromGroup ? 'AllTasksGroup' : 'allTasks', group)
                 setCurrentTaskDragged(true)
             break;
             case 'handleDragOver':
-                handleDragOver(e, index)
-                // setCurrentTaskDragged(false)
+                handleDragOver(e, index, fromGroup ? 'AllTasksGroup' : 'allTasks', group)
+                setCurrentTaskDragged(false)
             break;
             case 'handleDrop':
-                handleDrop(e, index, handleSetTaskVisible)
+                handleDrop(e, index, handleSetTaskVisible, fromGroup ? 'AllTasksGroup' : 'allTasks', group)
+                setCurrentTaskDragged(false)
             break;
         
             default:
@@ -112,21 +133,21 @@ const Task = ({
     const handleUpdateTask = (key) => {
         switch (key) {
             case 'active':
-                updateTask(element, 'active')
+                updateTask(element, 'active', group)
                 break;
         
             case 'opened':
                 if (opened) {
-                    console.log('====================================');
-                    console.log('setOpenedAnim(false)');
-                    console.log('====================================');
                     setOpenedAnim(false)
                     setTimeout(() => {
-                        updateTask(element, 'opened')
+                        // console.log('updateTask(element, opened, group)');
+                        updateTask(element, 'opened', group)
+                        setOpened(true)
                     }, 300);
                 }else{
-                    updateTask(element, 'opened')
-                    setOpenedAnim(true)
+                    updateTask(element, 'opened', group)
+                    setOpenedAnim(false)
+                    setOpened(false)
                 }
                 
             break;
@@ -135,38 +156,50 @@ const Task = ({
         }
     }
 
+    if (taskRef.current) {
+        taskRef.current.dataset.group = 'true'
+    }
+
+    if (currentTaskDragged) {
+        var app = document.getElementById("root");
+        app?.classList.add("grabbingToGroup");
+    }
+
+    console.log(opened);
+    
     return (
         <div className={
-            opened ? `taskWrapper taskWrapperActive opened ${currentTaskDragged ? 'currentTaskDragged' : ''} ${openedAnim ? ' wrapperOpenedAnim' : ''}` 
+            prevIndex === index ? `taskWrapper taskWrapperHidden` : opened ? `taskWrapper taskWrapperActive opened ${currentTaskDragged ? 'currentTaskDragged' : ''} ${openedAnim ? ' wrapperOpenedAnim' : ''}` 
             : active ? `taskWrapper taskWrapperActive ${currentTaskDragged ? 'currentTaskDragged' : ''} ${openedAnim ? ' wrapperOpenedAnim' : ''}` 
             : `taskWrapper notActiveTaskWrapper ${currentTaskDragged ? 'currentTaskDragged' : ''} ${openedAnim ? ' wrapperOpenedAnim' : ''}`   
-        }
+        }   
+            // title="drop to create group"
+            data-zone={dataZone}
+            ref={taskRef}
             onClick={() => handleUpdateTask('active')}
             onDoubleClick={() => handleUpdateTask('opened')}
             draggable
             onDragStart={(e) => handleDrags(e, index, 'handleDragStart')}
-            onDragOver={(e) => handleDragOver(e, index, 'handleDragOver')}
+            onDragOver={(e) => handleDrags(e, index, 'handleDragOver')}
             onDrop={(e) => handleDrags(e, index, 'handleDrop')}
         >   
-            {underlineAfterIndex === index && underlineAfterIndex !== prevIndex && index !== tasks.length-1 && prevIndex > index && (
+            {underlineAfterIndex === index && underlineAfterIndex !== prevIndex && index !== fatherArrayForTask.length-1 && prevIndex > index && (
                 <div className="holderToshowDragged" />
             )}
-            <div className={`holderToshowDragged ${underlineAfterIndex === index && underlineAfterIndex !== prevIndex && index !== tasks.length-1 && prevIndex > index ? 'holderToshowDraggedShowed' : ''}`} />
+            <div className={`holderToshowDragged ${underlineAfterIndex === index && underlineAfterIndex !== prevIndex && index !== fatherArrayForTask.length-1 && prevIndex > index ? 'holderToshowDraggedShowed' : ''}`} />
 
-            {/* {underlineAfterIndex === 1 && index == 1 && underlineAfterIndex !== prevIndex && (
-                <div className="holderToshowDragged" />
-            )} */}
-
-            {/* {underlineAfterIndex === index && <div className="underline" />} */}
-            <div className="taskTop">
+            <div className={`taskTop ${group} ${onThisTaskDrag ? ' taskTopDimmed' : ''}`}>
+                {willBeGroup && onThisTaskDrag && <div className="onDropText">
+                    <p>drop to create group</p>
+                </div>}
                 <div className="checkListItemsLeft">
                     <img src={Icons.taskIcon} alt="" />
                     <p>{element.title}</p>
-                    <div className="taskIcons">
+                    {!opened && <div className="taskIcons">
                         {element?.description?.length >= 2 && <img src={Icons.descriptonIcon} alt='descriptonIcon'/>}
                         {element?.checkList?.length >= 1 && <img src={Icons.checkListIcon} alt='checkListIcon'/>} 
                         {element?.labels?.length >= 1 && <img src={Icons.labelIcon} alt='labelIcon'/>}
-                    </div>
+                    </div>}
                 </div>
 
                 <div className="checkListItemsRight">
@@ -209,22 +242,17 @@ const Task = ({
                         {openSelectPriority && <Prority priorityVariants={priorityVariants} setPriority={setPriority}/>}
                     </div>
                 </div>
-
             </div>
             <div className={`taskBodyWrapper ${openedAnim ? 'openedAnim' : ''}`}>
                 {opened && <OpenedTaskBody element={element} setTasks={setTasks} tasks={tasks} />}
             </div>
 
-            <div className={`holderToshowDragged ${underlineAfterIndex === index && underlineAfterIndex !== prevIndex && (prevIndex < index || index == tasks.length-1) ? 'holderToshowDraggedShowed' : ''}`} />
+            <div className={`holderToshowDragged ${underlineAfterIndex === index && underlineAfterIndex !== prevIndex && (prevIndex < index || index == fatherArrayForTask.length-1) ? 'holderToshowDraggedShowed' : ''}`} />
         </div>
     )
 }
 
 export default Task
-
-
-
-// import React, { useEffect, useRef, useState } from 'react'
 // import './task.scss'
 // import dayjs from 'dayjs';
 // import Icons from '../../utils/ThemeIconPicker'

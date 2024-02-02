@@ -36,20 +36,25 @@ const DatePicker = ({
     <div className="calendarWrapper calendarSelect">
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DemoContainer className="DemoContainer" components={['DateCalendar', 'DateCalendar', 'DateCalendar']}>
-          <DemoItem>
-            <DateCalendar
-              defaultValue={dayjs(Date.now())}
-              views={['year', 'month', 'day']}
-              dayOfWeekFormatter={(_day, weekday) => `${weekday.format('dd')}`}
-              slots={{
-                OpenPickerIcon: Icons.circleCalendar,
-              }}
-              value={Cdate}
-              onChange={(newValue) => setDate(newValue)}
-              showDaysOutsideCurrentMonth={true}
-              renderInput={(params) => <TextField {...params} />}
-            />
-          </DemoItem>
+          <div className="muiDatePickerCustomStyles">
+            <DemoItem>
+            
+              <DateCalendar
+                defaultValue={dayjs(Date.now())}
+                views={['year', 'month', 'day']}
+                dayOfWeekFormatter={(_day, weekday) => `${weekday.format('dd')}`}
+                // className=''
+                slots={{
+                  OpenPickerIcon: Icons.circleCalendar,
+                }}
+                value={Cdate}
+                onChange={(newValue) => setDate(newValue)}
+                showDaysOutsideCurrentMonth={true}
+                renderInput={(params) => <TextField {...params} />}
+              />
+            
+            </DemoItem>
+          </div>
         </DemoContainer>
       </LocalizationProvider>
       <div className="customButtons">

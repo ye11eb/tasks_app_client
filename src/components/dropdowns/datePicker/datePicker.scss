@@ -187,11 +187,20 @@
         min-height: 195px;
         height: 100%;
     }
-    .css-1q04gal-MuiDateCalendar-root{
+    .MuiDateCalendar-root{
         height: unset;
     }
 
 
+}
+
+.muiDatePickerCustomStyles{
+    >div{
+        height: unset;
+        >div{
+            height: unset;
+        }
+    }
 }
 
 @media (prefers-color-scheme: light) {

@@ -25,6 +25,8 @@ const AddTask = ({ setAddTaskOpen, setTasks, tasks }) => {
     const [calendarImg, setClandarImg] = useState(Icons.calendarGrayIcon)
     const [daysToPickedDate, setDaysToPickedDate] = useState(0)
     const [shakeWindow, setShakeWindow] = useState()
+
+    const [isEmptyTask, setIsEmptyTask] = useState(!title && !description && checkList.length == 1 && labels.length == 0 && !progress && !priority && Cdate == null)
     let currentDate = dayjs(new Date())
 
     //label
@@ -171,162 +173,170 @@ const AddTask = ({ setAddTaskOpen, setTasks, tasks }) => {
     useEffect(() => {
         calendarImgFunc()
     }, [Cdate])
+
+    useEffect(() => {
+        setIsEmptyTask(!title && !description && checkList.length == 1 && labels.length == 0 && !progress && !priority && Cdate == null)
+    }, [title, description, checkList, labels, progress, priority, Cdate])
+    
     
 
     // calendarImg()
 
 
     return (
-        <div className={`AddTaskWrapper ${shakeWindow ? 'shakeWindow' : ''}`}
-            ref={addTaskRef}
-        >
-            <input 
-                autoFocus 
-                type="text" 
-                placeholder='Task title'
-                className='AddTaskTitleInput'
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-            />
-            
-            <div className="inputWrapper">
-                <input 
-                    type="text" 
-                    placeholder='Description'
-                    className='AddTaskInput'
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                />
-            </div>
-            {checkList.map((el, index) => (
-                    <CheckListItem 
-                        el={el}
-                        index={index} 
-                        handleKeyDown={handleKeyDown} 
-                        setCheckList={setCheckList}
-                        checkList={checkList}
-                    />
-            ))}
-
-            <div className="labels"
-                ref={labelsRef}
+        <div className="addTaskDimBg">
+            <div className={`AddTaskWrapper ${shakeWindow ? 'shakeWindow' : ''}`}
+                ref={addTaskRef}
             >
-                <div className="labelInput">
-                    {labels.length < 1 && <div className="labelWrapper labelBtnWrapper"
-                        onClick={() => setOpenSelectLabel(true)}
-                    >
-                        <p>no label</p>
-                    </div>}
-                    {openSelectLabel && <div className="Select lableSelect">
-                        {labelsVariants.map((label) => (
-                            <div className="SelectUnit"
-                                onClick={() => pickLabel(label)}
-                            >
-                                {labels.includes(label) ?  <img src={Icons.labelActiveIcon} alt="" /> : <img src={Icons.labelIcon} alt="" />}
-                                <p>{label}</p>
-                            </div>  
-                        ))}
-                    </div>}
+                <input 
+                    autoFocus 
+                    type="text" 
+                    placeholder='Task title'
+                    className='AddTaskTitleInput'
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                />
+                
+                <div className="inputWrapper">
+                    <input 
+                        type="text" 
+                        placeholder='Description'
+                        className='AddTaskInput'
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                    />
                 </div>
-                {labels.map((label) => (
-                    <div className="labelWrapper"
-                        onClick={() => setOpenSelectLabel(true)}
-                    >
-                        <p>{label}</p>
-                    </div>
+                {checkList.map((el, index) => (
+                        <CheckListItem 
+                            el={el}
+                            index={index} 
+                            handleKeyDown={handleKeyDown} 
+                            setCheckList={setCheckList}
+                            checkList={checkList}
+                        />
                 ))}
 
-            </div>
-
-            <div className="settings">
-                <div className="settingsLeft">
-                    <img src={Icons.forwardTaskIcon} alt="" />
-                    <p>Inbox</p>
-                </div>
-                <div className="settingsRight">
-                    {Cdate && <div className="other">
-                        <div className="otherDivs"
-                            // onClick={() => setAlarm(!alarm)}
-                        >
-                            {alarm && <img src={Icons.alarmIcon} alt="" />}
-                        </div>
-                        {/*  */}
-                        <div className="otherDivs"
-                            // onClick={() => setRepeat(!repeat)}
-                        >
-                            {repeat && <img src={Icons.repeatIcon} alt="" />}
-                        </div>
-                    </div>}
-                    <div className="calendarChoiceWrapper "
-                        ref={calendarRef}
-                    >
-                        {currentDate?.$M === Cdate?.$M && Cdate?.$D - currentDate?.$D > 1 ?
-                            <div className="imgIconWrapper">
-                                <img src={calendarImg} alt="" 
-                                    onClick={() => setOpenSelectDate(!openSelectDate)}
-                                />
-                                <p>{daysToPickedDate}</p>
-                            </div> 
-                        :
-                            <div className="imgIconWrapper">
-                                <img src={calendarImg} alt="" 
-                                    onClick={() => setOpenSelectDate(!openSelectDate)}
-                                />
-                            </div> 
-                        }
-                        {openSelectDate && <DatePicker
-                            currentDate={currentDate}
-                            Cdate={Cdate} 
-                            setDate={setDate}
-                            setOpenSelectDate={setOpenSelectDate}
-                            alarm={alarm}
-                            setAlarm={setAlarm}
-                            repeat={repeat}
-                            setRepeat={setRepeat}
-                        />}
-                    </div>
-                    <div className="progressChoiceWrapper"
-                        onClick={() => setOpenSelectProgress(!openSelectProgress)}
-                        ref={progressRef}
-                    >
-                        {progress ? <img src={progress.icon} alt="" /> : <img src={Icons.ToDoIcon} alt="" />}
-                        {openSelectProgress && <Progress 
-                            progressVariants={progressVariants} 
-                            setProgress={setProgress} 
-                        />}
-                    </div>
-
-                    <div className="priorityChoiceWrapper"
-                        onClick={() => setOpenSelectPriority(!openSelectPriority)}
-                        ref={priorityRef}
-                    >
-                        {priority ? <img src={priority.icon} alt="" /> : <img src={Icons.FlagGrayIcon} alt="" />}
-                        {openSelectPriority && 
-                        <Prority 
-                            priorityVariants={priorityVariants}
-                            setPriority={setPriority}
-                        />}
-                    </div>
-                </div>
-            </div>
-
-            <div className="buttonsWrapper">
-                <p
-                    onClick={() => setAddTaskOpen(false)}
-                >Cancel</p>
-                <div className="btn"
-                    onClick={() => handleAddTask()}
+                <div className="labels"
+                    ref={labelsRef}
                 >
-                    <p>Save</p>
-                </div>
-            </div>
+                    <div className="labelInput">
+                        {labels.length < 1 && <div className="labelWrapper labelBtnWrapper"
+                            onClick={() => setOpenSelectLabel(true)}
+                        >
+                            <p>no label</p>
+                        </div>}
+                        {openSelectLabel && <div className="Select lableSelect">
+                            {labelsVariants.map((label) => (
+                                <div className="SelectUnit"
+                                    onClick={() => pickLabel(label)}
+                                >
+                                    {labels.includes(label) ?  <img src={Icons.labelActiveIcon} alt="" /> : <img src={Icons.labelIcon} alt="" />}
+                                    <p>{label}</p>
+                                </div>  
+                            ))}
+                        </div>}
+                    </div>
+                    {labels.map((label) => (
+                        <div className="labelWrapper"
+                            onClick={() => setOpenSelectLabel(true)}
+                        >
+                            <p>{label}</p>
+                        </div>
+                    ))}
 
-            <div className="closeBtn"
-                onClick={() => setAddTaskOpen(false)}
-            >
-                <img src={Icons.closeBtnAddTask} alt="" />
+                </div>
+
+                <div className="settings">
+                    <div className="settingsLeft">
+                        <img src={Icons.forwardTaskIcon} alt="" />
+                        <p>Inbox</p>
+                    </div>
+                    <div className="settingsRight">
+                        {Cdate && <div className="other">
+                            <div className="otherDivs"
+                                // onClick={() => setAlarm(!alarm)}
+                            >
+                                {alarm && <img src={Icons.alarmIcon} alt="" />}
+                            </div>
+                            {/*  */}
+                            <div className="otherDivs"
+                                // onClick={() => setRepeat(!repeat)}
+                            >
+                                {repeat && <img src={Icons.repeatIcon} alt="" />}
+                            </div>
+                        </div>}
+                        <div className="calendarChoiceWrapper "
+                            ref={calendarRef}
+                        >
+                            {currentDate?.$M === Cdate?.$M && Cdate?.$D - currentDate?.$D > 1 ?
+                                <div className="imgIconWrapper">
+                                    <img src={calendarImg} alt="" 
+                                        onClick={() => setOpenSelectDate(!openSelectDate)}
+                                    />
+                                    <p>{daysToPickedDate}</p>
+                                </div> 
+                            :
+                                <div className="imgIconWrapper">
+                                    <img src={calendarImg} alt="" 
+                                        onClick={() => setOpenSelectDate(!openSelectDate)}
+                                    />
+                                </div> 
+                            }
+                            {openSelectDate && <DatePicker
+                                currentDate={currentDate}
+                                Cdate={Cdate} 
+                                setDate={setDate}
+                                setOpenSelectDate={setOpenSelectDate}
+                                alarm={alarm}
+                                setAlarm={setAlarm}
+                                repeat={repeat}
+                                setRepeat={setRepeat}
+                            />}
+                        </div>
+                        <div className="progressChoiceWrapper"
+                            onClick={() => setOpenSelectProgress(!openSelectProgress)}
+                            ref={progressRef}
+                        >
+                            {progress ? <img src={progress.icon} alt="" /> : <img src={Icons.ToDoIcon} alt="" />}
+                            {openSelectProgress && <Progress 
+                                progressVariants={progressVariants} 
+                                setProgress={setProgress} 
+                            />}
+                        </div>
+
+                        <div className="priorityChoiceWrapper"
+                            onClick={() => setOpenSelectPriority(!openSelectPriority)}
+                            ref={priorityRef}
+                        >
+                            {priority ? <img src={priority.icon} alt="" /> : <img src={Icons.FlagGrayIcon} alt="" />}
+                            {openSelectPriority && 
+                            <Prority 
+                                priorityVariants={priorityVariants}
+                                setPriority={setPriority}
+                            />}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="buttonsWrapper">
+                    <p
+                        onClick={() => setAddTaskOpen(false)}
+                    >Cancel</p>
+                    <div className={`btn ${isEmptyTask && 'disabled'}`}
+                        onClick={() => handleAddTask()}
+                    >
+                        <p>Save</p>
+                    </div>
+                </div>
+
+                <div className="closeBtn"
+                    onClick={() => setAddTaskOpen(false)}
+                >
+                    <img src={Icons.closeBtnAddTask} alt="" />
+                </div>
             </div>
         </div>
+        
     )
 }
 

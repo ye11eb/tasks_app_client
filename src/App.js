@@ -10,8 +10,8 @@ function App() {
   const [currentView, setCurrentView] = useState('All Tasks')
   const [tasks, setTasks] = useState([
     {
-      _id: 'gdsg2222222222222222222dfg',
-      title: 'Task 21',
+      _id: 'gdsgdfg',
+      title: 'Task 1',
       "date": "2024-01-30T22:00:00.000Z",
       inbox: true,
       labels: ['Label_2', 'Label_3'],
@@ -20,9 +20,9 @@ function App() {
           priority: 'None',
           progress: 'To Do',
         },
-        posible:{
-          alarm: true,
-        }
+        // posible:{
+        //   alarm: true,
+        // }
       }
     },
     {
@@ -47,16 +47,16 @@ function App() {
       inbox: true,
       labels: ['Label_2', 'Label_3', 'Label_5'],
       active: false,
-      oppened: false,
+      opened: false,
       other: {
         default:{
-          priority: 'Medium',
-          progress: 'In Progress',
+          priority: 'None',
+          progress: 'To Do',
         },
-        posible:{
-          repeat: true,
-          alarm: true,
-        }
+        // posible:{
+        //   repeat: true,
+        //   alarm: true,
+        // }
       }
     },
     {
@@ -79,11 +79,11 @@ function App() {
       ],
       inbox: true,
       active: false,
-      oppened: false,
+      opened: false,
       other: {
         default:{
-          priority: 'High',
-          progress: 'Done',
+          priority: 'None',
+          progress: 'To Do',
         },
       }
     },
@@ -109,15 +109,15 @@ function App() {
       inbox: true,
       labels: ['Label_2', 'Label_3'],
       active: false,
-      oppened: false,
+      opened: false,
       other: {
         default:{
           priority: 'None',
-          progress: 'On Testing',
+          progress: 'To Do',
         },
-        posible:{
-          repeat: true,
-        }
+        // posible:{
+        //   repeat: true,
+        // }
       }
     },
     {
@@ -146,13 +146,13 @@ function App() {
       ],
       "other": {
           "default": {
-            "priority": "Medium",
-            "progress": "Done",
+            "priority": "None",
+            "progress": "To Do",
           },
-          "posible": {
-              "alarm": true,
-              "repeat": true
-          }
+          // "posible": {
+          //     "alarm": true,
+          //     "repeat": true
+          // }
       }
   }
   ])

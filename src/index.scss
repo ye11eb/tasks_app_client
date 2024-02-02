@@ -12,6 +12,12 @@ a{
   text-decoration: none;
 }
 
+.btn{
+  p{
+    user-select: none;
+  }
+}
+
 .addTaskButton{
   width: 36px;
   height: 36px;
